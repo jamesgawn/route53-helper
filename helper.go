@@ -9,9 +9,15 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53/types"
 )
 
-func LoadConfig() (aws.Config, error) {
+func GetClient() (*route53.Client, error) {
 	awsConfig, awsConfigError := config.LoadDefaultConfig(context.TODO())
-	return awsConfig, awsConfigError
+	if awsConfigError != nil {
+		return nil, awsConfigError
+	}
+
+	client := route53.NewFromConfig(awsConfig)
+
+	return client, awsConfigError
 }
 
 func FindZone(ctx context.Context, client *route53.Client, zoneName *string) (*types.HostedZone, error) {
