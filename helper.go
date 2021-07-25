@@ -5,12 +5,26 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/route53"
 	"github.com/aws/aws-sdk-go-v2/service/route53/types"
 )
 
 func GetClient() (*route53.Client, error) {
 	awsConfig, awsConfigError := config.LoadDefaultConfig(context.TODO())
+	if awsConfigError != nil {
+		return nil, awsConfigError
+	}
+
+	client := route53.NewFromConfig(awsConfig)
+
+	return client, awsConfigError
+}
+
+func GetClientWithCredentials(accessKeyId string, secretKey string, token string) (*route53.Client, error) {
+	providedConfiguration := credentials.NewStaticCredentialsProvider(accessKeyId, secretKey, token)
+
+	awsConfig, awsConfigError := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(providedConfiguration))
 	if awsConfigError != nil {
 		return nil, awsConfigError
 	}
