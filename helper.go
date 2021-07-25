@@ -34,8 +34,8 @@ func GetClientWithCredentials(accessKeyId string, secretKey string, token string
 	return client, awsConfigError
 }
 
-func FindZone(ctx context.Context, client *route53.Client, zoneName *string) (*types.HostedZone, error) {
-
+func FindZone(client *route53.Client, zoneName *string) (*types.HostedZone, error) {
+        ctx := context.Background()
 	listHostedZonesInput := &route53.ListHostedZonesInput{}
 	zoneList, zoneListError := client.ListHostedZones(ctx, listHostedZonesInput)
 
@@ -52,7 +52,8 @@ func FindZone(ctx context.Context, client *route53.Client, zoneName *string) (*t
 	return &types.HostedZone{}, fmt.Errorf("unable to find zone: %s", *zoneName)
 }
 
-func UpdateRecord(ctx context.Context, client *route53.Client, zone *types.HostedZone, domain *string, ip *string) error {
+func UpdateRecord(client *route53.Client, zone *types.HostedZone, domain *string, ip *string) error {
+	ctx := context.Background()
 	params := &route53.ChangeResourceRecordSetsInput{
 		ChangeBatch: &types.ChangeBatch{
 			Changes: []types.Change{
